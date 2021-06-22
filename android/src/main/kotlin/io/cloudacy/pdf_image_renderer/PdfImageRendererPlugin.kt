@@ -141,8 +141,7 @@ class PdfImageRendererPlugin: FlutterPlugin, MethodCallHandler {
     }
 
     if (openPDFPages[id] != null) {
-      result.error("INVALID_ARGUMENTS", "PDF $id already has an open page.", null)
-      return
+      closePDFPage(openPDFPages[id]!!, id)
     }
 
     Thread {
@@ -177,13 +176,17 @@ class PdfImageRendererPlugin: FlutterPlugin, MethodCallHandler {
     }
 
     try {
-      page.close()
-      openPDFPages.remove(id)
+      closePDFPage(page, id)
 
       result.success(page)
     } catch (e: Exception) {
       result.error("EXECUTION_ERROR", e.message, null)
     }
+  }
+
+  private fun closePDFPage(@NonNull page: PdfRenderer.Page, @NonNull id: Int) {
+    page.close()
+    openPDFPages.remove(id)
   }
 
   private fun getPDFPageCountMethod(@NonNull call: MethodCall, @NonNull result: Result) {
